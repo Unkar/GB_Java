@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class HWTask4 {
 
-
+    //    считываем вводимые значения и записываем в массив
     public static String[] getNumbers(String str) {
         String[] numbers = new String[3];
         numbers[0] = str.substring(0, str.indexOf('+') - 1);
@@ -16,6 +16,7 @@ public class HWTask4 {
         return numbers;
     }
 
+    // определяем максимальную длину числа
     public static Integer getMaxLen(String[] numbers) {
         int maxLen = 0;
         for (String number : numbers) {
@@ -26,6 +27,7 @@ public class HWTask4 {
         return maxLen;
     }
 
+    // получаем массив чисел, где каждое число - это массив цифр
     public static String[][] getDigits(String[] numbers, Integer maxLen) {
         String[][] digits = new String[3][maxLen];
         for (int i = 0; i < 3; i++) {
@@ -41,6 +43,7 @@ public class HWTask4 {
         return digits;
     }
 
+    // переводим массив цифр из строкового в числовой формат и знаки вопроса заменяем на 0
     public static int[][] getDigitsInt(String[][] digits) {
         int[][] digitsInt = new int[3][digits[0].length];
         for (int i = 0; i < 3; i++) {
@@ -55,7 +58,10 @@ public class HWTask4 {
         return digitsInt;
     }
 
-
+    // Ищем решение для каждого разряда числа
+    // 2? + ?5 = 69 есть ни что иное как 2x + y5 = 69 ==> 25 + yx = 69 ==> yx = 44 ==> x = 4, y = 4
+    // начинаем искать предварительное решение с самого младшего разряда
+    // если в разряде разница меньше нуля, то переносим единицу в следующий разряд
     public static int[] getPreSolution(int[][] digitsInt, int maxLen) {
         int[] preSolution = new int[maxLen];
         for (int i = 0; i < maxLen; i++) {
@@ -68,36 +74,32 @@ public class HWTask4 {
         return preSolution;
     }
 
-//    public static boolean checkSolutionExist(String[][] digits, int[] preSolution) {
-//        for (int i = 0; i < digits[0].length; i++) {
-//            boolean isExist = false;
-//            for (int j = 0; j < 3; j++) {
-//                if (!digits[j][i].equals("?")) {
-//                    isExist = true;
-//                    break;
-//                }
-//            }
-//            if (!isExist && preSolution[i] == 0) {
-//                is\\\
-//            }
-//
-//        return true;
-//    }
-
+    public static boolean checkSolutionExist(String[][] digits, int[] preSolution) {
+        for (int i = 0; i < digits[0].length; i++) {
+            if (!digits[0][i].equals("?") && !digits[1][i].equals("?") && preSolution[i] != 0) {
+                if (Integer.parseInt(digits[0][i]) + Integer.parseInt(digits[1][i]) != preSolution[i]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    // Заполняем знаки вопрса в массиве цифр
     public static String[][] getSolution(int[] preSolution, String[][] digits, int maxLen) {
         for (int i = 0; i < maxLen; i++) {
-            if (digits[0][i].equals("?") && digits[1][i].equals("?")) {
-                digits[0][i] = String.valueOf(preSolution[i]);
-                digits[1][i] = "0";
-            } else if (digits[0][i].equals("?")) {
-                digits[0][i] = String.valueOf(preSolution[i]);
-            } else if (digits[1][i].equals("?")) {
-                digits[1][i] = String.valueOf(preSolution[i]);
+            if (digits[0][i].equals("?") && digits[1][i].equals("?")) { // если в разряде 2 знака вопроса
+                digits[0][i] = String.valueOf(preSolution[i]);  // то вставляем в него предварительное решение
+                digits[1][i] = "0";                             // и вставляем 0 в другой разряд
+            } else if (digits[0][i].equals("?")) {              // если в первом числе в разряде 1 знак вопроса
+                digits[0][i] = String.valueOf(preSolution[i]);  // то вставляем в него предварительное решение
+            } else if (digits[1][i].equals("?")) {              // если во втором числе в разряде 1 знак вопроса
+                digits[1][i] = String.valueOf(preSolution[i]);  // то вставляем в него предварительное решение
             }
         }
         return digits;
     }
 
+    //оформляем решение в виде строки
     public static String getAnswer(String[][] digits, int maxLen) {
         String[] answer = new String[3];
         for (int i = 0; i < 3; i++) {
@@ -131,17 +133,22 @@ public class HWTask4 {
         for (int i = 0; i < maxLen; i++) {
             System.out.print(preSolution[i] + " ");
         }
-        System.out.println();
-        String[][] solution = getSolution(preSolution, digits, maxLen);
-        System.out.println("Заполняем знаки вопроса соответственными значениями цифр из пререшения:");
-        for (int i = 0; i < maxLen; i++) {
-            for (int j = 0; j < 3; j++) {
-                System.out.print(solution[j][i] + " ");
+        System.out.println("\nПроверяем, что решение существует:");
+        System.out.println(checkSolutionExist(digits, preSolution));
+        if (checkSolutionExist(digits, preSolution)) {
+            System.out.println("Получаем решение:");
+            digits = getSolution(preSolution, digits, maxLen);
+            for (int i = 0; i < maxLen; i++) {
+                for (int j = 0; j < 3; j++) {
+                    System.out.print(digits[j][i] + " ");
+                }
+                System.out.println();
             }
-            System.out.println();
+            System.out.println("Получаем ответ:");
+            System.out.println(getAnswer(digits, maxLen));
+        } else {
+            System.out.println("Решение не существует");
         }
-        String answer = getAnswer(solution, maxLen);
-        System.out.println(answer);
     }
 
 
