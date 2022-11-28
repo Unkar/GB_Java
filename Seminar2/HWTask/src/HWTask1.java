@@ -5,6 +5,7 @@
 // Параметры для фильтрации: {"name":"Ivanov", "country":"Russia", "city":"Moscow", "age":"null"}
 //        то есть должно получиться что-то вроде:
 //        ... where name = Ivanov and country = Russia and city = Moscow
+
 public class HWTask1 {
     public static String getWhere(String json) {
         StringBuilder sb = new StringBuilder();
